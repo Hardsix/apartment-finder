@@ -1,0 +1,11 @@
+*/**/*.spec.ts
+*/**/*.e2e-spec.ts
+
+node_modules
+dist
+
+.cloudignore
+.gitignore
+.eslintrc.js
+Dockerfile
+README.md

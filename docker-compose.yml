@@ -1,0 +1,28 @@
+version: "3.4"
+
+# Used for persisting data between startups
+volumes:
+  neo4j-volume:
+  mysql-volume:
+  datastore-volume:
+    driver: local
+  postgres-volume:
+  zoo-data-volume:
+  zoo-datalog-volume:
+  kafka-data-volume:
+  vault-volume:
+  neo4j-test-e2e-volume:
+  mysql-test-e2e-volume:
+  datastore-test-e2e-volume:
+services:
+  postgres: &postgres
+    image: postgres
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: apartment-finder
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
