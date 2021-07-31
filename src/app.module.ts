@@ -5,6 +5,8 @@ import { HealthModule } from "./health/health.module";
 import { HelloModule } from "./hello/hello.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ApartmentFinderConfigService } from "./apartment-finder-config";
+import { ApartmentModule } from "./apartment/apartment.module";
+import { ScraperJobModule } from "./scraper-job/scraper-job.module";
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { ApartmentFinderConfigService } from "./apartment-finder-config";
     DatabaseModule,
     HealthModule,
     HelloModule,
+    ApartmentModule,
+    ScraperJobModule,
     TypeOrmModule.forRootAsync({
       imports: [ApartmentFinderConfigModule],
       useFactory: (config: ApartmentFinderConfigService) => config.postgresConnectionConfig,
