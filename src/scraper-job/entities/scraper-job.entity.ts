@@ -21,6 +21,9 @@ export class ScraperJob {
   @UpdateDateColumn()
   updatedAt: Date
 
+  @Column({ nullable: true })
+  lastProcessed: Date
+
   @Column()
   url: string
 

@@ -15,17 +15,6 @@ export class ApartmentController {
 
   @Post('')
   async create(@Body() apartmentBody: Partial<Apartment>) {
-    // const existingApartment = await this.findExistingApartment(apartmentBody)
-    // if (existingApartment) {
-    //   const versions: Partial<Apartment>[] = existingApartment?.meta?.versions || []
-    //   versions.push(existingApartment)
-
-    //   const savedApartment = await this.apartmentService.update(existingApartment.id, apartmentBody)
-    //   return savedApartment
-    // }
-
-    // const apartment = await this.apartmentService.create(apartmentBody)
-    // return apartment
     const apartment = await this.apartmentService.saveWithSoftEqual(apartmentBody)
     return apartment
   }

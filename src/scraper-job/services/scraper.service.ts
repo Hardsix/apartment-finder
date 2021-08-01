@@ -33,18 +33,43 @@ async function fetchUrlInStealth(url: string): Promise<string> {
   return content
 }
 
-async function extractNjuskaloApartmentLinksFromPage(url: string) {
+function isProcessed(pubDate: Date, lastProcessedDate: Date) {
+  return pubDate < lastProcessedDate
+}
+
+async function extractNjuskaloApartmentLinksFromPage(url: string, fetchAllPages = false, pageIndex = 1, processNewerThan: Date = undefined) {
   const content = await fetchUrlInStealth(url)
 
   const dom = await new JSDOM(content);
 
-  const aptLinksProxy = dom.window.document.querySelectorAll('.EntityList-item .entity-body .entity-title .link')
-  const aptLinks = _.map(aptLinksProxy, (aptLink) => `https://njuskalo.hr${aptLink.href}`)
+  const aptLinksProxy = dom.window.document.querySelectorAll('.content-main .EntityList-item .entity-body .entity-title .link')
+  let aptLinks = _.map(aptLinksProxy, (aptLink) => `https://njuskalo.hr${aptLink.href}`)
 
-  return aptLinks
+  const pubDatesProxy = dom.window.document.querySelectorAll('.content-main .EntityList-item .entity-body .entity-pub-date .date--full')
+  let pubDates = _.map(pubDatesProxy, (pubDate) => new Date(pubDate.dateTime))
+
+  const apartmentLinkData = []
+  for (let i = 0; i < aptLinks.length; i++) {
+    apartmentLinkData.push({
+      link: aptLinks[i],
+      date: pubDates[i]
+    })
+  }
+
+  let apartmentLinksToProcess = _.map(_.filter(apartmentLinkData, (data) => !isProcessed(data.date, processNewerThan)), (apt) => apt.link)
+  apartmentLinksToProcess = _.slice(apartmentLinksToProcess, 0, 3)
+
+  if (_.size(apartmentLinksToProcess) > 0 && fetchAllPages) {
+    const newPageUrl = `${url}&page=${pageIndex + 1}`
+    apartmentLinksToProcess = apartmentLinksToProcess.concat(await extractNjuskaloApartmentLinksFromPage(newPageUrl, true, pageIndex + 1, processNewerThan))
+  }
+
+  return apartmentLinksToProcess
 }
 
 async function extractSingleApartmentDataFromNjuskaloPage(url: string): Promise<Partial<Apartment>> {
+  console.log(`Parsing apartment in url ${url}`)
+  
   const content = await fetchUrlInStealth(url)
   const data = extractSingleApartmentDataFromNjuskaloPageContent(content)
 
@@ -90,8 +115,8 @@ async function extractSingleApartmentDataFromNjuskaloPageContent(content: string
   return result
 }
 
-async function extractApartmentsDataFromNjuskaloPage(url: string) {
-  const apartmentLinks = await extractNjuskaloApartmentLinksFromPage(url)
+async function extractApartmentsDataFromNjuskaloPage(url: string, processNewerThan: Date) {
+  const apartmentLinks = await extractNjuskaloApartmentLinksFromPage(url, false, 1, processNewerThan)
 
   const apartmentsData = await bluebird.mapSeries(apartmentLinks, async (link) => {
     const data = await extractSingleApartmentDataFromNjuskaloPage(link)

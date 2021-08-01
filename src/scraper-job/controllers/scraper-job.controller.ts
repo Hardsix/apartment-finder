@@ -3,7 +3,7 @@ import * as bluebird from 'bluebird'
 import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ScraperJob } from "../entities/scraper-job.entity";
 import { ScraperJobService } from "../services/scraper-job.service";
-import { extractApartmentsDataFromNjuskaloPage, extractNjuskaloApartmentLinksFromPage } from '../services/scraper.service';
+import { extractApartmentsDataFromNjuskaloPage } from '../services/scraper.service';
 import { ApartmentService } from '~/apartment/services/apartment.service';
 
 @Controller("scraperJob")
@@ -16,17 +16,33 @@ export class ScraperJobController {
     return scraperJob
   }
 
-  @Post('')
-  async create(@Body() scraperJobBody: Partial<ScraperJob>) {
-    const scraperJob = await this.scraperJobService.create(scraperJobBody)
-
-    const data = await extractApartmentsDataFromNjuskaloPage(scraperJob.url)
+  async processScraperJob(scraperJob: ScraperJob) {
+    const data = await extractApartmentsDataFromNjuskaloPage(scraperJob.url, scraperJob.lastProcessed)
     await bluebird.mapSeries(data, async (item) => {
       return await this.apartmentService.saveWithSoftEqual({
         ...item.data,
         url: item.link,
       })
     })
+
+    const newJobState = await this.scraperJobService.update(scraperJob.id, { lastProcessed: new Date() })
+    return newJobState
+  }
+
+  @Post('/:scraperJobId/process')
+  async manuallyProcessScraperJob(@Param('scraperJobId') scraperJobId: string) {
+    const scraperJob = await this.scraperJobService.findOne(scraperJobId)
+
+    const newJobState = await this.processScraperJob(scraperJob)
+
+    return {
+      scraperJob: newJobState,
+    }
+  }
+
+  @Post('')
+  async create(@Body() scraperJobBody: Partial<ScraperJob>) {
+    const scraperJob = await this.scraperJobService.create(scraperJobBody)
 
     return {
       scraperJob,
