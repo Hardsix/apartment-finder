@@ -35,6 +35,6 @@ export class ScraperJobService {
   }
 
   async delete(scraperJob: ScraperJob): Promise<DeleteResult> {
-    return this.repository.delete(scraperJob)
+    return this.repository.delete(scraperJob?.id)
   }
 }

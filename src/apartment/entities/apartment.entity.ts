@@ -20,7 +20,7 @@ export class Apartment {
   @Column({ nullable: false })
   url: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'float' })
   squareMeters: number
 
   @Column({ nullable: false })

@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { ScheduleModule } from '@nestjs/schedule';
 import { DatabaseModule } from "./database/database.module";
 import { ApartmentFinderConfigModule } from "./apartment-finder-config/apartment-finder-config.module";
 import { HealthModule } from "./health/health.module";
@@ -15,6 +16,7 @@ import { ScraperJobModule } from "./scraper-job/scraper-job.module";
     HealthModule,
     HelloModule,
     ApartmentModule,
+    ScheduleModule.forRoot(),
     ScraperJobModule,
     TypeOrmModule.forRootAsync({
       imports: [ApartmentFinderConfigModule],

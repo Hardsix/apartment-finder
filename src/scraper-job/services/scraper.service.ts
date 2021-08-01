@@ -4,6 +4,8 @@ import * as _ from 'lodash'
 import { JSDOM } from 'jsdom'
 import { Apartment } from '~/apartment/entities/apartment.entity';
 
+const stealthFetchSleepBaselineMs = 3000
+
 const sleep = (ms) => {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, ms)
@@ -21,7 +23,7 @@ async function getBrowser() {
 }
 
 async function fetchUrlInStealth(url: string): Promise<string> {
-  await sleep(_.floor((1 + Math.random()) * 2000))
+  await sleep(_.floor((1 + Math.random()) * stealthFetchSleepBaselineMs))
 
   const browser = await getBrowser()
   const page = await browser.newPage();
@@ -99,6 +101,9 @@ async function extractSingleApartmentDataFromNjuskaloPageContent(content: string
     basicDetails[_.trim(keyElem.textContent)] = _.trim(valElem.textContent)
   })
 
+  const trimmedFloor = _.trim(basicDetails['Kat'], '.')
+  const floorRaw = trimmedFloor === 'Visoko prizemlje' ? '0' : trimmedFloor
+
   const result: Partial<Apartment> = {
     name,
     advertisementCode,
@@ -106,7 +111,7 @@ async function extractSingleApartmentDataFromNjuskaloPageContent(content: string
     city: _.split(basicDetails['Lokacija'], ',')[0],
     neighbourhood: _.trim(_.split(basicDetails['Lokacija'], ',')[1]),
     locationInNeighbourhood: _.trim(_.split(basicDetails['Lokacija'], ',')[2]),
-    floor: _.toNumber(_.trim(basicDetails['Kat'], '.')),
+    floor: _.toNumber(floorRaw),
     squareMeters: _.toNumber(_.replace(_.trim(basicDetails['Stambena površina'], ' m²'), ',', '.')),
     priceEuros: _.toNumber(_.replace(priceEuros, '.', '')),
     yearBuilt: _.toNumber(_.replace(basicDetails['Godina izgradnje'], '.', '')),
@@ -117,6 +122,14 @@ async function extractSingleApartmentDataFromNjuskaloPageContent(content: string
     delete result.yearBuilt
   }
 
+  if (_.isNaN(result.floor) || result.floor === null) {
+    delete result.floor
+  }
+
+  if (_.isNaN(result.bedroomCount) || result.bedroomCount === null) {
+    delete result.bedroomCount
+  }
+
   if (result.yearRenovated === 0) {
     delete result.yearRenovated
   }
@@ -124,19 +137,34 @@ async function extractSingleApartmentDataFromNjuskaloPageContent(content: string
   return result
 }
 
-async function extractApartmentsDataFromNjuskaloPage(url: string, processNewerThan: Date) {
-  const apartmentLinks = await extractNjuskaloApartmentLinksFromPage(url, true, 1, processNewerThan)
+async function extractApartmentsDataFromNjuskaloPage(name, url: string, processNewerThan: Date) {
+  try {
+    console.log(`[${name} - ${new Date()}] Processing scraper with options:\n${JSON.stringify({
+      url,
+      processNewerThan
+    }, null, 2)}`)
+    const apartmentLinks = await extractNjuskaloApartmentLinksFromPage(url, true, 1, processNewerThan)
+    console.log(`[${name} - ${new Date()}] Located ${apartmentLinks.length} links to process`)
+  
+    const apartmentsData = await bluebird.mapSeries(apartmentLinks, async (link) => {
+      const data = await extractSingleApartmentDataFromNjuskaloPage(link)
+  
+      return {
+        link,
+        data,
+      }
+    })
+    console.log(`[${name} - ${new Date()}] Processed data for ${apartmentsData.length} apartments`)
 
-  const apartmentsData = await bluebird.mapSeries(apartmentLinks, async (link) => {
-    const data = await extractSingleApartmentDataFromNjuskaloPage(link)
-
-    return {
-      link,
-      data,
-    }
-  })
-
-  return apartmentsData
+    return apartmentsData
+  } catch (err) {
+    console.log(`[${name} - ${new Date()}] Encountered error:\n${JSON.stringify({
+      err,
+      name,
+      url,
+      processNewerThan,
+    }, null, 2)}`)
+  }
 }
 
 export {
