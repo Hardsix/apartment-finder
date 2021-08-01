@@ -10,14 +10,25 @@ const sleep = (ms) => {
   })
 }
 
+let browser
+async function getBrowser() {
+  if (browser) {
+    return browser
+  }
+
+  browser = await launchPuppeteer({ stealth: true });  
+  return browser
+}
+
 async function fetchUrlInStealth(url: string): Promise<string> {
-  const browser = await launchPuppeteer({ stealth: true });
+  await sleep(_.floor((1 + Math.random()) * 2000))
+
+  const browser = await getBrowser()
   const page = await browser.newPage();
   
   await page.goto(url);
   const content = await page.content()
   await page.close();
-  await browser.close();
 
   return content
 }
@@ -41,8 +52,6 @@ async function extractSingleApartmentDataFromNjuskaloPage(url: string): Promise<
 }
 
 async function extractSingleApartmentDataFromNjuskaloPageContent(content: string): Promise<Partial<Apartment>> {
-  const a = _
-
   const dom = await new JSDOM(content);
   const document = dom.window.document
 
@@ -86,7 +95,6 @@ async function extractApartmentsDataFromNjuskaloPage(url: string) {
 
   const apartmentsData = await bluebird.mapSeries(apartmentLinks, async (link) => {
     const data = await extractSingleApartmentDataFromNjuskaloPage(link)
-    await sleep(1100)
 
     return {
       link,
