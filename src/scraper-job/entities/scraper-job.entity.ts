@@ -13,6 +13,9 @@ export class ScraperJob {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @Column({ nullable: true })
+  name: string
+
   @Index('idx_scraperJob_created')
   @CreateDateColumn()
   createdAt: Date
