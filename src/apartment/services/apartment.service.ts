@@ -1,3 +1,4 @@
+import * as _ from 'lodash'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DeleteResult, FindManyOptions, Repository } from 'typeorm'
@@ -22,6 +23,20 @@ export class ApartmentService {
     return this.repository.save(apartment, {  })
   }
 
+  async saveWithSoftEqual(apartment: Partial<Apartment>): Promise<Apartment> {
+    const existingApartment = await this.findExistingApartment(apartment)
+    if (existingApartment) {
+      const versions: Partial<Apartment>[] = existingApartment?.meta?.versions || []
+      versions.push(existingApartment)
+
+      const savedApartment = await this.update(existingApartment.id, apartment)
+      return savedApartment
+    }
+
+    const newApartment = await this.create(apartment)
+    return newApartment
+  }
+
   async findOne(id: string): Promise<Apartment> {
     return this.repository.findOne(id)
   }
@@ -36,5 +51,23 @@ export class ApartmentService {
 
   async delete(apartment: Apartment): Promise<DeleteResult> {
     return this.repository.delete(apartment)
+  }
+
+  private async findExistingApartment(apartment: Partial<Apartment>): Promise<Apartment> {
+    if (apartment.advertisementCode) {
+      const sameCodeApts = await this.find({ where: { advertisementCode: apartment.advertisementCode } })
+      if (_.size(sameCodeApts) > 0) {
+        return sameCodeApts[0]
+      }
+    }
+
+    if (apartment.url) {
+      const sameUrlApts = await this.find({ where: { url: apartment.url } })
+      if (_.size(sameUrlApts) > 0) {
+        return sameUrlApts[0]
+      }
+    }
+
+    return null
   }
 }

@@ -54,6 +54,12 @@ export class Apartment {
   @Column()
   floor: number
 
+  @Column()
+  yearBuilt: number
+
+  @Column()
+  yearRenovated: number
+
   @Column('json', { nullable: true })
   meta: any
 

@@ -10,7 +10,5 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',
-    // TODO: fix unit tests and delete lines below
-    '/src/transfer-flow/controllers/__tests__/step.controller.spec.ts',
   ],
 }
