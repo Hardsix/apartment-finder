@@ -8,6 +8,9 @@ import { extractApartmentsDataFromNjuskaloPage } from '../services/scraper.servi
 import { ApartmentService } from '~/apartment/services/apartment.service';
 import { Cron } from '@nestjs/schedule';
 
+const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'//'https://myaccountname.slack.com/services/hooks/incoming-webhook?token=myToken';
+const slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
+
 const jobQueue = new PQueue({ concurrency: 1 });
 
 @Controller("scraperJob")
@@ -47,6 +50,13 @@ export class ScraperJobController {
         }, null, 2)}`)
       }
     })
+
+    if (_.size(data) > 0) {
+      slack.send({
+        text: `New apartments:\n${_.join(_.map(data, apt => apt.link), '\n')}`,
+        unfurl_links: 1,
+      });
+    }
 
     const newJobState = await this.scraperJobService.update(scraperJob.id, { lastProcessed: new Date() })
     return newJobState

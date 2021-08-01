@@ -47,6 +47,7 @@
     "reflect-metadata": "0.1.13",
     "rimraf": "3.0.2",
     "sinon": "9.0.2",
+    "slack-notify": "^0.1.7",
     "swagger-ui-express": "4.1.4",
     "typeorm": "0.2.29"
   },
