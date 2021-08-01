@@ -37,7 +37,7 @@ function isProcessed(pubDate: Date, lastProcessedDate: Date) {
   return pubDate < lastProcessedDate
 }
 
-async function extractNjuskaloApartmentLinksFromPage(url: string, fetchAllPages = false, pageIndex = 1, processNewerThan: Date = undefined) {
+async function extractNjuskaloApartmentLinksFromPage(url: string, fetchAllPages = true, pageIndex = 1, processNewerThan: Date = undefined) {
   const content = await fetchUrlInStealth(url)
 
   const dom = await new JSDOM(content);
@@ -56,8 +56,9 @@ async function extractNjuskaloApartmentLinksFromPage(url: string, fetchAllPages 
     })
   }
 
-  let apartmentLinksToProcess = _.map(_.filter(apartmentLinkData, (data) => !isProcessed(data.date, processNewerThan)), (apt) => apt.link)
-  apartmentLinksToProcess = _.slice(apartmentLinksToProcess, 0, 3)
+  let apartmentLinksToProcess = _.map(
+    _.filter(apartmentLinkData, (data) => !processNewerThan || !isProcessed(data.date, processNewerThan)), (apt) => apt.link
+  )
 
   if (_.size(apartmentLinksToProcess) > 0 && fetchAllPages) {
     const newPageUrl = `${url}&page=${pageIndex + 1}`
@@ -69,7 +70,7 @@ async function extractNjuskaloApartmentLinksFromPage(url: string, fetchAllPages 
 
 async function extractSingleApartmentDataFromNjuskaloPage(url: string): Promise<Partial<Apartment>> {
   console.log(`Parsing apartment in url ${url}`)
-  
+
   const content = await fetchUrlInStealth(url)
   const data = extractSingleApartmentDataFromNjuskaloPageContent(content)
 
@@ -112,11 +113,19 @@ async function extractSingleApartmentDataFromNjuskaloPageContent(content: string
     yearRenovated: _.toNumber(_.replace(basicDetails['Godina zadnje renovacije'], '.', '')),
   }
 
+  if (result.yearBuilt === 0) {
+    delete result.yearBuilt
+  }
+
+  if (result.yearRenovated === 0) {
+    delete result.yearRenovated
+  }
+
   return result
 }
 
 async function extractApartmentsDataFromNjuskaloPage(url: string, processNewerThan: Date) {
-  const apartmentLinks = await extractNjuskaloApartmentLinksFromPage(url, false, 1, processNewerThan)
+  const apartmentLinks = await extractNjuskaloApartmentLinksFromPage(url, true, 1, processNewerThan)
 
   const apartmentsData = await bluebird.mapSeries(apartmentLinks, async (link) => {
     const data = await extractSingleApartmentDataFromNjuskaloPage(link)

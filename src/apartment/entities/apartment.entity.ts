@@ -27,38 +27,38 @@ export class Apartment {
   priceEuros: number
 
   @Column({ nullable: true })
-  bedroomCount: number
+  bedroomCount?: number
 
   @Column({ nullable: true })
-  hasParking: boolean
+  hasParking?: boolean
 
   @Column({ nullable: true })
-  hasGarage: boolean
+  hasGarage?: boolean
 
   @Column({ nullable: true })
-  description: string
+  description?: string
 
   @Column({ nullable: true })
-  city: string
+  city?: string
 
   @Column({ nullable: true })
-  neighbourhood: string
+  neighbourhood?: string
 
   @Column({ nullable: true })
-  locationInNeighbourhood: string
+  locationInNeighbourhood?: string
 
   @Index('idx_apartment_advertisementCode', { unique: true })
   @Column()
   advertisementCode: string
 
-  @Column()
-  floor: number
+  @Column({ nullable: true })
+  floor?: number
 
-  @Column()
-  yearBuilt: number
+  @Column({ nullable: true })
+  yearBuilt?: number
 
-  @Column()
-  yearRenovated: number
+  @Column({ nullable: true })
+  yearRenovated?: number
 
   @Column('json', { nullable: true })
   meta: any
