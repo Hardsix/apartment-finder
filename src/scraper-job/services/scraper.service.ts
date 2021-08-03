@@ -159,6 +159,8 @@ async function extractApartmentsDataFromNjuskaloPage(name, url: string, processN
     return apartmentsData
   } catch (err) {
     console.log(`[${name} - ${new Date()}] Encountered error:\n${JSON.stringify({
+      message: err.message,
+      stack: err.stack,
       err,
       name,
       url,

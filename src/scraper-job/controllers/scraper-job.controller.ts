@@ -37,12 +37,17 @@ export class ScraperJobController {
 
   async processScraperJob(scraperJob: ScraperJob) {
     const data = await extractApartmentsDataFromNjuskaloPage(scraperJob.name, scraperJob.url, scraperJob.lastProcessed)
+
+    const newApartments = []
     await bluebird.mapSeries(data, async (item) => {
       try {
-        await this.apartmentService.saveWithSoftEqual({
+        const { apartment, isNewEntity } = await this.apartmentService.saveWithSoftEqual({
           ...item.data,
           url: item.link,
         })
+        if (isNewEntity) {
+          newApartments.push(apartment)
+        }
       } catch (err) {
         console.log(`[${scraperJob.name} - ${new Date()}] - error saving apartment:\n${JSON.stringify({
           ...item.data,
@@ -51,9 +56,9 @@ export class ScraperJobController {
       }
     })
 
-    if (_.size(data) > 0) {
+    if (_.size(newApartments) > 0) {
       slack.send({
-        text: `New apartments:\n${_.join(_.map(data, apt => apt.link), '\n')}`,
+        text: `New apartments - ${scraperJob.name}:\n${_.join(_.map(newApartments, apt => apt.url), '\n')}`,
         unfurl_links: 1,
       });
     }

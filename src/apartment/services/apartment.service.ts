@@ -23,18 +23,27 @@ export class ApartmentService {
     return this.repository.save(apartment, {  })
   }
 
-  async saveWithSoftEqual(apartment: Partial<Apartment>): Promise<Apartment> {
+  async saveWithSoftEqual(apartment: Partial<Apartment>): Promise<{
+    apartment: Apartment,
+    isNewEntity: boolean,
+  }> {
     const existingApartment = await this.findExistingApartment(apartment)
     if (existingApartment) {
       const versions: Partial<Apartment>[] = existingApartment?.meta?.versions || []
       versions.push(existingApartment)
 
       const savedApartment = await this.update(existingApartment.id, apartment)
-      return savedApartment
+      return {
+        apartment: savedApartment,
+        isNewEntity: true,
+      }
     }
 
     const newApartment = await this.create(apartment)
-    return newApartment
+    return {
+      apartment: newApartment,
+      isNewEntity: false,
+    }
   }
 
   async findOne(id: string): Promise<Apartment> {
