@@ -35,14 +35,14 @@ export class ApartmentService {
       const savedApartment = await this.update(existingApartment.id, apartment)
       return {
         apartment: savedApartment,
-        isNewEntity: true,
+        isNewEntity: false,
       }
     }
 
     const newApartment = await this.create(apartment)
     return {
       apartment: newApartment,
-      isNewEntity: false,
+      isNewEntity: true,
     }
   }
 
