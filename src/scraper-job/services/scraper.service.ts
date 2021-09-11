@@ -20,9 +20,6 @@ async function getBrowser() {
 
   browser = await launchPuppeteer({
     stealth: true,
-    launchOptions: {
-      executablePath: "/usr/bin/chromium-browser",
-    },
   });
   return browser;
 }
