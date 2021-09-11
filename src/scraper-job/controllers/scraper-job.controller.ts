@@ -91,7 +91,7 @@ export class ScraperJobController {
     return newJobState;
   }
 
-  // @Cron("*/1 * * * *")
+  @Cron("*/60 * * * *")
   async handleCron() {
     console.log("Queuing scraper jobs...");
     const jobs = await this.scraperJobService.getAll();

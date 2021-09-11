@@ -1,0 +1,56 @@
+[
+  {
+    "id": "da765476-7bb7-4c7b-96ab-0f384fcc4d3a",
+    "name": "Stanovi-Zapad",
+    "createdAt": "2021-09-11T18:34:59.441Z",
+    "updatedAt": "2021-09-11T18:34:59.441Z",
+    "lastProcessed": null,
+    "url": "https://www.njuskalo.hr/prodaja-stanova?geo%5BlocationIds%5D=1264%2C2803%2C2804%2C2806%2C2807%2C2808%2C2809%2C2812%2C2811%2C2814%2C2813%2C2815&price%5Bmax%5D=165000&livingArea%5Bmin%5D=50",
+    "type": "njuskalo"
+  },
+  {
+    "id": "71fa1a9a-7f5e-40f2-b83b-e87579e72d13",
+    "name": "Kuce-VanZG",
+    "createdAt": "2021-09-11T18:35:30.622Z",
+    "updatedAt": "2021-09-11T18:35:30.622Z",
+    "lastProcessed": null,
+    "url": "https://www.njuskalo.hr/prodaja-kuca?geo%5BlocationIds%5D=1762%2C1757&price%5Bmax%5D=200000&livingArea%5Bmax%5D=200",
+    "type": "njuskalo"
+  },
+  {
+    "id": "37485f6c-29f7-480b-8c2e-d34f84ff1de8",
+    "name": "Stanovi-Gorica",
+    "createdAt": "2021-09-11T18:35:46.212Z",
+    "updatedAt": "2021-09-11T18:35:46.212Z",
+    "lastProcessed": null,
+    "url": "https://www.njuskalo.hr/prodaja-stanova/velika-gorica?price%5Bmax%5D=160000&livingArea%5Bmin%5D=60",
+    "type": "njuskalo"
+  },
+  {
+    "id": "aeb57d54-5f50-4c90-97cc-490121e55878",
+    "name": "Stanovi-NoviZG",
+    "createdAt": "2021-09-11T18:35:58.493Z",
+    "updatedAt": "2021-09-11T18:35:58.493Z",
+    "lastProcessed": null,
+    "url": "https://www.njuskalo.hr/prodaja-stanova?geo%5BlocationIds%5D=2678%2C2683%2C2684%2C2685%2C12110%2C2871%2C2696%2C2697%2C2698%2C2701&price%5Bmax%5D=160000&livingArea%5Bmin%5D=50",
+    "type": "njuskalo"
+  },
+  {
+    "id": "e2ffa1b9-0f70-46d4-bf7a-13d803550dfc",
+    "name": "Kuce-ZG",
+    "createdAt": "2021-09-11T18:36:49.147Z",
+    "updatedAt": "2021-09-11T18:36:49.147Z",
+    "lastProcessed": null,
+    "url": "https://www.njuskalo.hr/prodaja-kuca/zagreb?price%5Bmax%5D=200000&livingArea%5Bmax%5D=200",
+    "type": "njuskalo"
+  },
+  {
+    "id": "a1a5d27c-8f31-44cf-a6c0-325c9455e3e3",
+    "name": "Stanovi-Centar-Istok",
+    "createdAt": "2021-09-11T18:38:50.710Z",
+    "updatedAt": "2021-09-11T18:38:50.710Z",
+    "lastProcessed": null,
+    "url": "https://www.njuskalo.hr/prodaja-stanova?geo%5BlocationIds%5D=2613%2C2612%2C2619%2C2638%2C2672%2C2675%2C2676%2C2674%2C2677%2C13739%2C12932%2C2705%2C13740%2C2707%2C2716%2C2719%2C2816%2C15019%2C2817%2C2818%2C2820%2C2819%2C2822%2C2821&price%5Bmax%5D=160000&livingArea%5Bmin%5D=50",
+    "type": "njuskalo"
+  }
+]

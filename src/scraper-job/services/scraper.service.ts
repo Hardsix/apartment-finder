@@ -20,18 +20,10 @@ async function getBrowser() {
     return browser;
   }
 
-  // browser = await launchPuppeteer({
-  //   stealth: true,
-  //   launchOptions: {
-  //     executablePath: path.resolve(
-  //       __dirname,
-  //       "../node_modules/puppeteer/.local-chromium/linux-650583/chrome-linux/chrome"
-  //     ),
-  //   },
-  // });
-  browser = await puppeteer.launch({
-    headless: true,
+  browser = await launchPuppeteer({
+    stealth: true,
   });
+
   return browser;
 }
 
