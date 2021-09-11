@@ -1,4 +1,6 @@
+import * as path from "path";
 import * as bluebird from "bluebird";
+import * as puppeteer from "puppeteer";
 import { launchPuppeteer } from "apify";
 import * as _ from "lodash";
 import { JSDOM } from "jsdom";
@@ -18,8 +20,17 @@ async function getBrowser() {
     return browser;
   }
 
-  browser = await launchPuppeteer({
-    stealth: true,
+  // browser = await launchPuppeteer({
+  //   stealth: true,
+  //   launchOptions: {
+  //     executablePath: path.resolve(
+  //       __dirname,
+  //       "../node_modules/puppeteer/.local-chromium/linux-650583/chrome-linux/chrome"
+  //     ),
+  //   },
+  // });
+  browser = await puppeteer.launch({
+    headless: true,
   });
   return browser;
 }

@@ -43,7 +43,7 @@
     "lodash": "4.17.15",
     "p-queue": "6.6.2",
     "pg": "8.4.2",
-    "puppeteer": "10.1.0",
+    "puppeteer": "10.2.0",
     "reflect-metadata": "0.1.13",
     "rimraf": "3.0.2",
     "sinon": "9.0.2",
