@@ -58,6 +58,7 @@
     "@nestjs/cli": "7.6.0",
     "@nestjs/testing": "7.6.15",
     "@types/cron": "^1.7.3",
+    "@types/events": "3.0.0",
     "@types/express": "4.17.3",
     "@types/jest": "25.2.3",
     "@types/lodash": "4.14.108",
