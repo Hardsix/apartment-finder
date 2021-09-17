@@ -41,7 +41,8 @@ async function fetchUrlInStealth(url: string): Promise<string> {
 }
 
 function isProcessed(pubDate: Date, lastProcessedDate: Date) {
-  return pubDate < lastProcessedDate;
+  // also cover case when pub date does not exist
+  return !pubDate || pubDate < lastProcessedDate;
 }
 
 async function extractNjuskaloApartmentLinksFromPage(
@@ -83,7 +84,7 @@ async function extractNjuskaloApartmentLinksFromPage(
     (apt) => apt.link
   );
 
-  if (_.size(apartmentLinksToProcess) > 0 && fetchAllPages) {
+  if (fetchAllPages && _.size(apartmentLinksToProcess) > 0) {
     const newPageUrl = `${url}&page=${pageIndex + 1}`;
     apartmentLinksToProcess = apartmentLinksToProcess.concat(
       await extractNjuskaloApartmentLinksFromPage(
