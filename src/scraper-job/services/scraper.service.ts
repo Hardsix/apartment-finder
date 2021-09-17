@@ -49,8 +49,11 @@ async function extractNjuskaloApartmentLinksFromPage(
   url: string,
   fetchAllPages = true,
   pageIndex = 1,
-  processNewerThan: Date = undefined
+  processNewerThan: Date = undefined,
+  maxPages: number = undefined
 ) {
+  if (!maxPages) maxPages = 50;
+
   const content = await fetchUrlInStealth(url);
 
   const dom = await new JSDOM(content);
@@ -84,7 +87,11 @@ async function extractNjuskaloApartmentLinksFromPage(
     (apt) => apt.link
   );
 
-  if (fetchAllPages && _.size(apartmentLinksToProcess) > 0) {
+  if (
+    _.size(apartmentLinksToProcess) > 0 &&
+    fetchAllPages &&
+    pageIndex < maxPages
+  ) {
     const newPageUrl = `${url}&page=${pageIndex + 1}`;
     apartmentLinksToProcess = apartmentLinksToProcess.concat(
       await extractNjuskaloApartmentLinksFromPage(
