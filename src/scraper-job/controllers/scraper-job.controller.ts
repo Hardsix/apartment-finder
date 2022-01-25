@@ -4,9 +4,9 @@ import PQueue from "p-queue";
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { ScraperJob } from "../entities/scraper-job.entity";
 import { ScraperJobService } from "../services/scraper-job.service";
-import { extractApartmentsDataFromNjuskaloPage } from "../services/scraper.service";
 import { ApartmentService } from "~/apartment/services/apartment.service";
 import { Cron } from "@nestjs/schedule";
+import { scrapeApartments } from "../services/scraper.service";
 
 const MY_SLACK_WEBHOOK_URL =
   "https://hooks.slack.com/services/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"; //'https://myaccountname.slack.com/services/hooks/incoming-webhook?token=myToken';
@@ -40,14 +40,15 @@ export class ScraperJobController {
   }
 
   async processScraperJob(scraperJob: ScraperJob) {
-    const data = await extractApartmentsDataFromNjuskaloPage(
+    const apartmentsData = await scrapeApartments(
       scraperJob.name,
       scraperJob.url,
-      scraperJob.lastProcessed
+      scraperJob.lastProcessed,
+      scraperJob.type || "njuskalo"
     );
 
     const newApartments = [];
-    await bluebird.mapSeries(data, async (item) => {
+    await bluebird.mapSeries(apartmentsData, async (item) => {
       try {
         const {
           apartment,
@@ -91,7 +92,7 @@ export class ScraperJobController {
     return newJobState;
   }
 
-  @Cron("*/60 * * * *")
+  @Cron("*/50 * * * *")
   async handleCron() {
     console.log("Queuing scraper jobs...");
     const jobs = await this.scraperJobService.getAll();

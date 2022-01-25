@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import * as _ from "lodash";
 import {
   Column,
   CreateDateColumn,
@@ -6,30 +6,31 @@ import {
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm'
+} from "typeorm";
+import { ScraperJobType } from "../types";
 
 @Entity()
 export class ScraperJob {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ nullable: true })
-  name: string
+  name: string;
 
-  @Index('idx_scraperJob_created')
+  @Index("idx_scraperJob_created")
   @CreateDateColumn()
-  createdAt: Date
+  createdAt: Date;
 
-  @Index('idx_scraperJob_updated')
+  @Index("idx_scraperJob_updated")
   @UpdateDateColumn()
-  updatedAt: Date
+  updatedAt: Date;
 
   @Column({ nullable: true })
-  lastProcessed: Date
+  lastProcessed: Date;
 
   @Column()
-  url: string
+  url: string;
 
   @Column()
-  type: 'njuskalo' | 'index'
+  type: ScraperJobType;
 }
