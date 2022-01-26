@@ -21,6 +21,14 @@ function cleanUpContent(content: string) {
   return cleanContent;
 }
 
+function getAbsoluteLink(link: string) {
+  if (link.indexOf("index.hr") !== -1) {
+    return link;
+  } else {
+    return `https://www.index.hr${link}`;
+  }
+}
+
 /**
  * Extracts all apartment links from list url and subsequent pages
  * @param url
@@ -37,9 +45,26 @@ async function extractIndexApartmentLinksFromPage(
   processNewerThan: Date = undefined,
   maxPages: number = undefined
 ): Promise<string[]> {
-  if (!maxPages) maxPages = 50;
+  const content = cleanUpContent(await fetchUrlInStealth(url));
+  if (!maxPages) {
+    const dom = await new JSDOM(cleanUpContent(content));
+    const pagination = dom.window.document.querySelectorAll(
+      ".pagination > li > a"
+    );
+    const lastPageHref = getAbsoluteLink(pagination[6]?.href);
 
-  const content = await fetchUrlInStealth(url);
+    if (lastPageHref) {
+      const lastPageUrl = new URL(lastPageHref);
+      const lastPageNum = parseInt(lastPageUrl.searchParams.get("num"));
+      if (lastPageNum) {
+        maxPages = lastPageNum;
+      }
+    }
+
+    if (!maxPages) {
+      maxPages = 50;
+    }
+  }
 
   let apartmentLinksToProcess = await getApartmentLinksFromContent(
     content,
@@ -61,7 +86,8 @@ async function extractIndexApartmentLinksFromPage(
         newUrl.toString(),
         true,
         pageIndex + 1,
-        processNewerThan
+        processNewerThan,
+        maxPages
       )
     );
   }
@@ -76,7 +102,9 @@ async function getApartmentLinksFromContent(
   const dom = await new JSDOM(cleanUpContent(content));
 
   const aptLinksProxy = dom.window.document.querySelectorAll(".result");
-  const aptLinks = _.map(aptLinksProxy, (aptLink) => aptLink.href);
+  const aptLinks = _.map(aptLinksProxy, (aptLink) =>
+    getAbsoluteLink(aptLink.href)
+  );
 
   const pubDatesProxy = dom.window.document.querySelectorAll(
     ".result .icon-time"

@@ -12,10 +12,10 @@ async function scrapeApartments(
   type: ScraperJobType = "njuskalo"
 ): Promise<{ link: string; data: ParsedApartmentData }[]> {
   if (type === "njuskalo") {
-    return []; // temp disabled until index is running well
-    return getApartmentsFromNjuskaloPage(name, url, processNewerThan);
+    return await getApartmentsFromNjuskaloPage(name, url, processNewerThan);
   } else if (type === "index") {
-    return getApartmentsFromIndexPage(name, url, processNewerThan);
+    console.log(`Calling index scraper`);
+    return await getApartmentsFromIndexPage(name, url, processNewerThan);
   }
 
   throw new Error(`Scraper not implemented for type ${type}`);
