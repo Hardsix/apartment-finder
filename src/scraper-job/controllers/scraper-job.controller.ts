@@ -6,7 +6,7 @@ import { ScraperJob } from "../entities/scraper-job.entity";
 import { ScraperJobService } from "../services/scraper-job.service";
 import { ApartmentService } from "~/apartment/services/apartment.service";
 import { Cron } from "@nestjs/schedule";
-import { scrapeApartments } from "../services/scraper.service";
+import { ScraperService } from "../services/scraper.service";
 
 const MY_SLACK_WEBHOOK_URL =
   "https://hooks.slack.com/services/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"; //'https://myaccountname.slack.com/services/hooks/incoming-webhook?token=myToken';
@@ -17,30 +17,31 @@ const jobQueue = new PQueue({ concurrency: 1 });
 @Controller("scraperJob")
 export class ScraperJobController {
   constructor(
-    private readonly scraperJobService: ScraperJobService,
-    private readonly apartmentService: ApartmentService
+    private readonly scraperJobRepo: ScraperJobService,
+    private readonly apartmentRepo: ApartmentService,
+    private readonly scraperService: ScraperService
   ) {}
 
   @Get("/:scraperJobId")
   async get(@Param("scraperJobId") scraperJobId: string): Promise<ScraperJob> {
-    const scraperJob = await this.scraperJobService.findOne(scraperJobId);
+    const scraperJob = await this.scraperJobRepo.findOne(scraperJobId);
     return scraperJob;
   }
 
   @Delete("/:scraperJobId")
   async delete(@Param("scraperJobId") scraperJobId: string): Promise<void> {
-    const scraperJob = await this.scraperJobService.findOne(scraperJobId);
-    await this.scraperJobService.delete(scraperJob);
+    const scraperJob = await this.scraperJobRepo.findOne(scraperJobId);
+    await this.scraperJobRepo.delete(scraperJob);
   }
 
   @Get("/")
   async getAll(): Promise<ScraperJob[]> {
-    const scraperJobs = await this.scraperJobService.find({});
+    const scraperJobs = await this.scraperJobRepo.find({});
     return scraperJobs;
   }
 
   async processScraperJob(scraperJob: ScraperJob) {
-    const apartmentsData = await scrapeApartments(
+    const apartmentsData = await this.scraperService.scrapeApartments(
       scraperJob.name,
       scraperJob.url,
       scraperJob.lastProcessed,
@@ -53,7 +54,7 @@ export class ScraperJobController {
         const {
           apartment,
           isNewEntity,
-        } = await this.apartmentService.saveWithSoftEqual({
+        } = await this.apartmentRepo.saveWithSoftEqual({
           ...item.data,
           url: item.link,
         });
@@ -86,16 +87,16 @@ export class ScraperJobController {
       });
     }
 
-    const newJobState = await this.scraperJobService.update(scraperJob.id, {
+    const newJobState = await this.scraperJobRepo.update(scraperJob.id, {
       lastProcessed: new Date(),
     });
     return newJobState;
   }
 
-  @Cron("*/50 * * * *")
+  @Cron("*/55 * * * *")
   async handleCron() {
     console.log("Queuing scraper jobs...");
-    const jobs = await this.scraperJobService.getAll();
+    const jobs = await this.scraperJobRepo.getAll();
     console.log(`Located ${jobs.length} to execute`);
     await bluebird.mapSeries(jobs, async (job) => {
       console.log(`Executing job ${job.name}`);
@@ -114,7 +115,7 @@ export class ScraperJobController {
 
   @Post("/:scraperJobId/process")
   async manuallyProcessScraperJob(@Param("scraperJobId") scraperJobId: string) {
-    const scraperJob = await this.scraperJobService.findOne(scraperJobId);
+    const scraperJob = await this.scraperJobRepo.findOne(scraperJobId);
 
     const newJobState = await this.processScraperJob(scraperJob);
 
@@ -125,7 +126,7 @@ export class ScraperJobController {
 
   @Post("")
   async create(@Body() scraperJobBody: Partial<ScraperJob>) {
-    const scraperJob = await this.scraperJobService.create(scraperJobBody);
+    const scraperJob = await this.scraperJobRepo.create(scraperJobBody);
 
     return {
       scraperJob,
