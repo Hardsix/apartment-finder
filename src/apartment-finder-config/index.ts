@@ -1,1 +1,1 @@
-export * from './apartment-finder-config.service'
+export * from "./apartment-finder-config.service";

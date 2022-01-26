@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import * as _ from "lodash";
 import {
   Column,
   CreateDateColumn,
@@ -6,27 +6,27 @@ import {
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm'
+} from "typeorm";
 
 @Entity()
 export class Hello {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-  @Index('idx_flow_created')
+  @Index("idx_flow_created")
   @CreateDateColumn()
-  createdAt: Date
+  createdAt: Date;
 
-  @Index('idx_flow_updated')
+  @Index("idx_flow_updated")
   @UpdateDateColumn()
-  updatedAt: Date
+  updatedAt: Date;
 
   @Column()
-  name: string
+  name: string;
 
   @Column({ nullable: true })
-  description: string
+  description: string;
 
-  @Column('json', { nullable: true })
-  meta: unknown
+  @Column("json", { nullable: true })
+  meta: unknown;
 }

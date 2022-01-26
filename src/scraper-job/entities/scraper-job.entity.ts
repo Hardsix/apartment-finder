@@ -33,4 +33,7 @@ export class ScraperJob {
 
   @Column()
   type: ScraperJobType;
+
+  @Column()
+  priority: number;
 }

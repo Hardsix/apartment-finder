@@ -6,11 +6,8 @@ import { ScraperJob } from "./entities/scraper-job.entity";
 import { ScraperJobService } from "./services/scraper-job.service";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([ScraperJob]),
-    ApartmentModule,
-  ],
+  imports: [TypeOrmModule.forFeature([ScraperJob]), ApartmentModule],
   controllers: [ScraperJobController],
-  providers: [ScraperJobService]
+  providers: [ScraperJobService],
 })
 export class ScraperJobModule {}

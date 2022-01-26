@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import * as _ from "lodash";
 import {
   Column,
   CreateDateColumn,
@@ -6,68 +6,68 @@ import {
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm'
+} from "typeorm";
 
 @Entity()
 export class Apartment {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ nullable: false })
-  name: string
+  name: string;
 
-  @Index('idx_apartment_url', { unique: true })
+  @Index("idx_apartment_url", { unique: true })
   @Column({ nullable: false })
-  url: string
+  url: string;
 
-  @Column({ nullable: false, type: 'float' })
-  squareMeters: number
+  @Column({ nullable: false, type: "float" })
+  squareMeters: number;
 
   @Column({ nullable: false })
-  priceEuros: number
+  priceEuros: number;
 
   @Column({ nullable: true })
-  bedroomCount?: number
+  bedroomCount?: number;
 
   @Column({ nullable: true })
-  hasParking?: boolean
+  hasParking?: boolean;
 
   @Column({ nullable: true })
-  hasGarage?: boolean
+  hasGarage?: boolean;
 
   @Column({ nullable: true })
-  description?: string
+  description?: string;
 
   @Column({ nullable: true })
-  city?: string
+  city?: string;
 
   @Column({ nullable: true })
-  neighbourhood?: string
+  neighbourhood?: string;
 
   @Column({ nullable: true })
-  locationInNeighbourhood?: string
+  locationInNeighbourhood?: string;
 
-  @Index('idx_apartment_advertisementCode', { unique: true })
+  @Index("idx_apartment_advertisementCode", { unique: true })
   @Column()
-  advertisementCode: string
+  advertisementCode: string;
 
   @Column({ nullable: true })
-  floor?: number
+  floor?: number;
 
   @Column({ nullable: true })
-  yearBuilt?: number
+  yearBuilt?: number;
 
   @Column({ nullable: true })
-  yearRenovated?: number
+  yearRenovated?: number;
 
-  @Column('json', { nullable: true })
-  meta: any
+  @Column("json", { nullable: true })
+  meta: any;
 
-  @Index('idx_apartment_created')
+  @Index("idx_apartment_created")
   @CreateDateColumn()
-  createdAt: Date
+  createdAt: Date;
 
-  @Index('idx_apartment_updated')
+  @Index("idx_apartment_updated")
   @UpdateDateColumn()
-  updatedAt: Date
+  updatedAt: Date;
 }

@@ -7,15 +7,17 @@ import { ApartmentService } from "../services/apartment.service";
 export class ApartmentController {
   constructor(private readonly apartmentService: ApartmentService) {}
 
-  @Get('/:apartmentId')
-  async get(@Param('apartmentId') apartmentId: string): Promise<Apartment> {
-    const apartment = await this.apartmentService.findOne(apartmentId)
-    return apartment
+  @Get("/:apartmentId")
+  async get(@Param("apartmentId") apartmentId: string): Promise<Apartment> {
+    const apartment = await this.apartmentService.findOne(apartmentId);
+    return apartment;
   }
 
-  @Post('')
+  @Post("")
   async create(@Body() apartmentBody: Partial<Apartment>) {
-    const apartment = await this.apartmentService.saveWithSoftEqual(apartmentBody)
-    return apartment
+    const apartment = await this.apartmentService.saveWithSoftEqual(
+      apartmentBody
+    );
+    return apartment;
   }
 }

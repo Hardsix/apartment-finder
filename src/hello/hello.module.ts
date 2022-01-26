@@ -5,10 +5,8 @@ import { Hello } from "./entities/hello.entity";
 import { HelloService } from "./services/hello.service";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Hello]),
-  ],
+  imports: [TypeOrmModule.forFeature([Hello])],
   controllers: [HelloController],
-  providers: [HelloService]
+  providers: [HelloService],
 })
 export class HelloModule {}
