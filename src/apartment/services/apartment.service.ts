@@ -58,7 +58,24 @@ export class ApartmentService {
   }
 
   async find(options: FindManyOptions<Apartment>): Promise<Apartment[]> {
-    return this.repository.find(options);
+    const pageOptions = _.pick(options, ['skip', 'take'])
+
+    // const keysOfApartment = <any>keys<Apartment>();
+    const filterOptions = {}
+    _.forEach(_.keys(options), (key) => {
+      if (key === 'skip' || key === 'take' || key === 'pageSize' || key === 'pageNumber') {
+        return
+      }
+
+      // if (keysOfApartment.indexOf(key) !== -1) {
+      filterOptions[key] = options[key]
+      // }
+    })
+
+    return this.repository.find({
+      ...pageOptions,
+      where: options.where,
+    });
   }
 
   async delete(apartment: Apartment): Promise<DeleteResult> {

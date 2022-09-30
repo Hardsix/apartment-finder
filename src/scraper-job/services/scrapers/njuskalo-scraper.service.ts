@@ -94,12 +94,17 @@ async function extractSingleApartmentDataFromNjuskaloPageContent(
     .textContent;
   const advertisementCode = _.trim(_.split(adCodeRaw, ":")[1]);
 
-  const priceRaw = document.querySelector(
+  const priceRawElement = document.querySelector(
+    ".ClassifiedDetailSummary-priceDomestic"
+  ) || document.querySelector(
     ".ClassifiedDetailSummary-priceForeign"
-  ).textContent;
-  const priceRegex = /([0-9.]+)/;
+  );
+  const priceRaw = priceRawElement.textContent
+  const priceRegex = /([0-9\.,]+)\s\u20AC/gm;
+
   const priceMatch = priceRegex.exec(priceRaw);
-  const priceEuros = priceMatch[0];
+
+  const priceEuros = priceMatch[1];
 
   const basicDetailsRaw = document.querySelector(
     ".ClassifiedDetailBasicDetails-list"

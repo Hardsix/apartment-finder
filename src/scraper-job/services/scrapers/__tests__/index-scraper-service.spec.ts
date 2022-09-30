@@ -3,13 +3,18 @@ import * as apartment1Text from "./index-apartment1";
 import * as apartment2Text from "./index-apartment2";
 
 import {
-  extractSingleApartmentDataFromIndexPageContent,
-  getApartmentLinksFromContent,
+  IndexScraperService,
 } from "../index-scraper.service";
 import { ParsedApartmentData } from "~/scraper-job/types";
 
 describe("Index Scraper Service", () => {
   beforeEach(async () => {});
+
+  const fakeRepo: any = {
+    find: jest.fn(() => Promise.resolve([]))
+  }
+
+  const scraper = new IndexScraperService(fakeRepo)
 
   it.each([
     [
@@ -47,7 +52,7 @@ describe("Index Scraper Service", () => {
   ])(
     "should parse index apartment page correctly given text content",
     async (text: string, expectedData: ParsedApartmentData) => {
-      const data = await extractSingleApartmentDataFromIndexPageContent(text);
+      const data = await scraper.extractSingleApartmentDataFromIndexPageContent(text);
 
       expect(data).toBeTruthy();
 
@@ -86,7 +91,7 @@ describe("Index Scraper Service", () => {
   ])(
     "should parse index list page correctly given text content",
     async (text: string, expectedLinks: string[]) => {
-      const links = await getApartmentLinksFromContent(text);
+      const links = await scraper.getApartmentLinksFromContent(text);
 
       expect(links).toBeTruthy();
 
