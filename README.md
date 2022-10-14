@@ -1,5 +1,9 @@
 ## Description
 
+Project that finds apartments for sale fitting various search criteria, on real estate ad sites in Croatia.
+
+Can be generalized more by adding more providers that cover other sites, or providers that cover other types of ads - not just real estate sales.
+
 ## Installation
 
 Create .env file with contents according to .env.example
