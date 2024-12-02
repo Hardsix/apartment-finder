@@ -9,10 +9,21 @@ import { Cron } from "@nestjs/schedule";
 import { ScraperService } from "../services/scraper.service";
 
 const MY_SLACK_WEBHOOK_URL =
-  "https://hooks.slack.com/services/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"; //'https://myaccountname.slack.com/services/hooks/incoming-webhook?token=myToken';
+  "https://hooks.slack.com/services/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"; //'https://myaccountname.slack.com/services/hooks/incoming-webhook?token=myToken';
 const slack = require("slack-notify")(MY_SLACK_WEBHOOK_URL);
 
 const jobQueue = new PQueue({ concurrency: 1 });
+
+// async function sleep (ms) {
+//   return new Promise((resolve, reject) => {
+//     setTimeout(resolve, ms)
+//   })
+// }
+
+// async function fun (repo) {
+//   await sleep(5000)
+//   await repo.findExistingApartment({ url: 'tomin url' })
+// }
 
 @Controller("scraperJob")
 export class ScraperJobController {
@@ -20,7 +31,9 @@ export class ScraperJobController {
     private readonly scraperJobRepo: ScraperJobService,
     private readonly apartmentRepo: ApartmentService,
     private readonly scraperService: ScraperService
-  ) {}
+  ) {
+    // fun(apartmentRepo)
+  }
 
   @Get("/:scraperJobId")
   async get(@Param("scraperJobId") scraperJobId: string): Promise<ScraperJob> {
@@ -63,8 +76,7 @@ export class ScraperJobController {
         }
       } catch (err) {
         console.log(
-          `[${
-            scraperJob.name
+          `[${scraperJob.name
           } - ${new Date()}] - error saving apartment:\n${JSON.stringify(
             {
               ...item.data,
@@ -77,7 +89,7 @@ export class ScraperJobController {
       }
     });
 
-    if (_.size(newApartments) > 0) {
+    if (_.size(newApartments) > 0 && process.env.SEND_SLACK_NOTIFICATIONS === 'true') {
       slack.send({
         text: `New apartments - ${scraperJob.name}:\n${_.join(
           _.map(newApartments, (apt) => apt.url),
@@ -93,7 +105,7 @@ export class ScraperJobController {
     return newJobState;
   }
 
-  @Cron("*/55 * * * *")
+  @Cron("27 * * * *")
   async handleCron() {
     console.log("Queuing scraper jobs...");
     const jobs = await this.scraperJobRepo.getAll();

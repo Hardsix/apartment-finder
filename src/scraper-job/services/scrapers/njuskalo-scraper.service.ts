@@ -1,8 +1,13 @@
 import * as bluebird from "bluebird";
 import * as _ from "lodash";
-import { JSDOM } from "jsdom";
+import { JSDOM, VirtualConsole } from "jsdom";
 import { ParsedApartmentData } from "~/scraper-job/types";
 import { fetchUrlInStealth } from "../stealth-browser.service";
+
+const virtualConsole = new VirtualConsole();
+virtualConsole.on("error", () => {
+  // No-op to skip console errors.
+});
 
 function isProcessed(pubDate: Date, lastProcessedDate: Date) {
   // also cover case when pub date does not exist
@@ -20,7 +25,7 @@ async function extractNjuskaloApartmentLinksFromPage(
 
   const content = await fetchUrlInStealth(url);
 
-  const dom = await new JSDOM(content);
+  const dom = await new JSDOM(content, { virtualConsole });
 
   const aptLinksProxy = dom.window.document.querySelectorAll(
     ".content-main .EntityList-item .entity-body .entity-title .link"
@@ -84,7 +89,7 @@ async function extractSingleApartmentDataFromNjuskaloPage(
 async function extractSingleApartmentDataFromNjuskaloPageContent(
   content: string
 ): Promise<ParsedApartmentData> {
-  const dom = await new JSDOM(content);
+  const dom = await new JSDOM(content, { virtualConsole });
   const document = dom.window.document;
 
   const name = document.querySelector(".ClassifiedDetailSummary-title")
@@ -178,8 +183,7 @@ async function extractApartmentsDataFromPage(
       processNewerThan
     );
     console.log(
-      `[${name} - ${new Date()}] Located ${
-        apartmentLinks.length
+      `[${name} - ${new Date()}] Located ${apartmentLinks.length
       } links to process`
     );
 
@@ -197,8 +201,7 @@ async function extractApartmentsDataFromPage(
       };
     });
     console.log(
-      `[${name} - ${new Date()}] Processed data for ${
-        apartmentsData.length
+      `[${name} - ${new Date()}] Processed data for ${apartmentsData.length
       } apartments`
     );
 
